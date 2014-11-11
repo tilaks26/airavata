@@ -277,9 +277,9 @@ public class ApplicationInputResource extends AbstractResource {
             } else {
             	applicationInput=existingApplicationInput;
             }
-            applicationInput.setInterfaceID(interfaceID);
             ApplicationInterface applicationInterface = em.find(ApplicationInterface.class, interfaceID);
             applicationInput.setApplicationInterface(applicationInterface);
+            applicationInput.setInterfaceID(applicationInterface.getInterfaceID());
             applicationInput.setDataType(dataType);
             applicationInput.setInputKey(inputKey);
             applicationInput.setInputVal(inputVal);

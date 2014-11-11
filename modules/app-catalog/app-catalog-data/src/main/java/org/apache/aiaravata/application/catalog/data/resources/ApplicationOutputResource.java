@@ -267,26 +267,21 @@ public class ApplicationOutputResource extends AbstractResource {
                     new AppOutput_PK(interfaceID, outputKey));
             em.close();
 
+            ApplicationOutput applicationOutput;
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            if (existingApplicationOutput != null) {
-                existingApplicationOutput.setInterfaceID(interfaceID);
-                ApplicationInterface applicationInterface = em.find(ApplicationInterface.class, interfaceID);
-                existingApplicationOutput.setApplicationInterface(applicationInterface);
-                existingApplicationOutput.setDataType(dataType);
-                existingApplicationOutput.setOutputKey(outputKey);
-                existingApplicationOutput.setOutputVal(outputVal);
-                em.merge(existingApplicationOutput);
+            if (existingApplicationOutput == null) {
+                applicationOutput = new ApplicationOutput();
             } else {
-                ApplicationOutput applicationOutput = new ApplicationOutput();
-                applicationOutput.setInterfaceID(interfaceID);
-                ApplicationInterface applicationInterface = em.find(ApplicationInterface.class, interfaceID);
-                applicationOutput.setApplicationInterface(applicationInterface);
-                applicationOutput.setDataType(dataType);
-                applicationOutput.setOutputKey(outputKey);
-                applicationOutput.setOutputVal(outputVal);
-                em.persist(applicationOutput);
+                applicationOutput = existingApplicationOutput;
             }
+            ApplicationInterface applicationInterface = em.find(ApplicationInterface.class, interfaceID);
+            applicationOutput.setApplicationInterface(applicationInterface);
+            applicationOutput.setInterfaceID(applicationInterface.getInterfaceID());
+            applicationOutput.setDataType(dataType);
+            applicationOutput.setOutputKey(outputKey);
+            applicationOutput.setOutputVal(outputVal);
+            em.merge(applicationOutput);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

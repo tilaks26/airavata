@@ -166,15 +166,25 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             existingInterface.setAppName(updatedInterface.getApplicationName());
             existingInterface.save();
 
+            // remove existing modules before adding
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AbstractResource.AppModuleMappingConstants.INTERFACE_ID, interfaceId);
+            AppModuleMappingResource moduleMappingResource = new AppModuleMappingResource();
+            moduleMappingResource.remove(ids);
             List<String> applicationModules = updatedInterface.getApplicationModules();
             if (applicationModules != null && !applicationModules.isEmpty()){
                 for (String moduleId : applicationModules){
                     AppModuleResource appModuleResource = new AppModuleResource();
-                    AppModuleMappingResource moduleMappingResource = new AppModuleMappingResource();
-                    Map<String, String> ids = new HashMap<String, String>();
+                    moduleMappingResource = new AppModuleMappingResource();
+                    ids = new HashMap<String, String>();
                     ids.put(AbstractResource.AppModuleMappingConstants.MODULE_ID, moduleId);
                     ids.put(AbstractResource.AppModuleMappingConstants.INTERFACE_ID, interfaceId);
-                    AppModuleMappingResource existingMapping = (AppModuleMappingResource)moduleMappingResource.get(ids);
+                    AppModuleMappingResource existingMapping;
+                    if (!moduleMappingResource.isExists(ids)){
+                          existingMapping = new AppModuleMappingResource();
+                    } else {
+                        existingMapping = (AppModuleMappingResource)moduleMappingResource.get(ids);
+                    }
                     existingMapping.setInterfaceId(interfaceId);
                     existingMapping.setModuleId(moduleId);
                     existingMapping.setModuleResource((AppModuleResource)appModuleResource.get(moduleId));
@@ -183,11 +193,16 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                 }
             }
 
+            // remove existing application inputs
+            ApplicationInputResource inputResource = new ApplicationInputResource();
+            ids = new HashMap<String, String>();
+            ids.put(AbstractResource.AppInputConstants.INTERFACE_ID, interfaceId);
+            inputResource.remove(ids);
             List<InputDataObjectType> applicationInputs = updatedInterface.getApplicationInputs();
             if (applicationInputs != null && !applicationInputs.isEmpty()){
                 for (InputDataObjectType input : applicationInputs){
-                    ApplicationInputResource inputResource = new ApplicationInputResource();
-                    Map<String, String> ids = new HashMap<String, String>();
+                    inputResource = new ApplicationInputResource();
+                    ids = new HashMap<String, String>();
                     ids.put(AbstractResource.AppInputConstants.INTERFACE_ID, interfaceId);
                     ids.put(AbstractResource.AppInputConstants.INPUT_KEY, input.getName());
                     if (inputResource.isExists(ids)){
@@ -206,11 +221,16 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                 }
             }
 
+            // remove existing app outputs before adding
+            ApplicationOutputResource outputResource = new ApplicationOutputResource();
+            ids = new HashMap<String, String>();
+            ids.put(AbstractResource.AppOutputConstants.INTERFACE_ID, interfaceId);
+            outputResource.remove(ids);
             List<OutputDataObjectType> applicationOutputs = updatedInterface.getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()){
                 for (OutputDataObjectType output : applicationOutputs){
-                    ApplicationOutputResource outputResource = new ApplicationOutputResource();
-                    Map<String, String> ids = new HashMap<String, String>();
+                    outputResource = new ApplicationOutputResource();
+                    ids = new HashMap<String, String>();
                     ids.put(AbstractResource.AppOutputConstants.INTERFACE_ID, interfaceId);
                     ids.put(AbstractResource.AppOutputConstants.OUTPUT_KEY, output.getName());
                     if (outputResource.isExists(ids)){

@@ -62,7 +62,9 @@ public class ApplicationOutputResource extends AbstractResource {
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_OUTPUT);
             generator.setParameter(AppOutputConstants.INTERFACE_ID, ids.get(AppOutputConstants.INTERFACE_ID));
-            generator.setParameter(AppOutputConstants.OUTPUT_KEY, ids.get(AppOutputConstants.OUTPUT_KEY));
+            if (ids.get(AppOutputConstants.OUTPUT_KEY) != null) {
+                generator.setParameter(AppOutputConstants.OUTPUT_KEY, ids.get(AppOutputConstants.OUTPUT_KEY));
+            }
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -78,6 +80,10 @@ public class ApplicationOutputResource extends AbstractResource {
                 em.close();
             }
         }
+    }
+
+    public void removeAll() throws AppCatalogException {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public Resource get(Object identifier) throws AppCatalogException {

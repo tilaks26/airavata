@@ -88,7 +88,7 @@ public class AppInterfaceTest {
             outputs.add(output1);
             outputs.add(output2);
             description.setApplicationName("testApplication");
-            description.setApplicationDesription("my testApplication");
+            description.setApplicationDescription("my testApplication");
             description.setApplicationModules(modules);
             description.setApplicationInputs(inputs);
             description.setApplicationOutputs(outputs);
@@ -106,7 +106,7 @@ public class AppInterfaceTest {
                 ApplicationInterfaceDescription updateApp = appInterface.getApplicationInterface(appID);
                 List<OutputDataObjectType> appOutputs = updateApp.getApplicationOutputs();
                 System.out.println("********** application name ************* : " + updateApp.getApplicationName());
-                System.out.println("********** application description ************* : " + updateApp.getApplicationDesription());
+                System.out.println("********** application description ************* : " + updateApp.getApplicationDescription());
                 System.out.println("********** output size ************* : " + appOutputs.size());
             }
             ApplicationModule wrfModule = appInterface.getApplicationModule(wrfModuleId);

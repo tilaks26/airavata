@@ -83,7 +83,8 @@ public class SSHInputHandler extends AbstractHandler {
             log.info("Invoking SCPInputHandler");
             super.invoke(jobExecutionContext);
 
-
+            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
+            
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {

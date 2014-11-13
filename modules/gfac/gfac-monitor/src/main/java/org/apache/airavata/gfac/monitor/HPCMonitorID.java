@@ -66,7 +66,11 @@ public class HPCMonitorID extends MonitorID {
                 SecurityContext securityContext = jobExecutionContext.getSecurityContext(hostAddress);
                 ServerInfo serverInfo = null;
                 if (securityContext != null) {
-                    serverInfo = (((GSISecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                    if(securityContext instanceof GSISecurityContext){
+                        serverInfo = (((GSISecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                    }else if(securityContext instanceof SSHSecurityContext){
+                        serverInfo = (((SSHSecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                    }
                 }
                 if (serverInfo.getUserName() != null) {
                     setUserName(serverInfo.getUserName());

@@ -49,16 +49,15 @@ public class ResourceConnection {
     public ResourceConnection(HostMonitorData hostMonitorData,AuthenticationInfo authInfo) throws SSHApiException {
         MonitorID monitorID = hostMonitorData.getMonitorIDs().get(0);
         try {
-            GSISecurityContext securityContext = (GSISecurityContext)
-                    monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress());
-            if(securityContext != null) {
-                cluster = (PBSCluster) securityContext.getPbsCluster();
-            }else {
+            if(monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress()) instanceof GSISecurityContext){
+                GSISecurityContext gsisshSecurityContext = (GSISecurityContext)
+                        monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress());
+                cluster =  (PBSCluster) gsisshSecurityContext.getPbsCluster();
+            }else if(monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress()) instanceof SSHSecurityContext) {
                 SSHSecurityContext sshSecurityContext = (SSHSecurityContext)
                         monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress());
-                cluster = (PBSCluster)sshSecurityContext.getPbsCluster();
+                cluster = (PBSCluster) sshSecurityContext.getPbsCluster();
             }
-
             // we just use cluster configuration from the incoming request and construct a new cluster because for monitoring
             // we are using our own credentials and not using one users account to do everything.
             authenticationInfo = authInfo;

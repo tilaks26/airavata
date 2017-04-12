@@ -10,9 +10,17 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>task-job-submission</artifactId>
-    <name>Task Job Submission</name>
+    <artifactId>airavata-task-jobsubmission</artifactId>
+    <name>Airavata Task Job Submission</name>
+    <packaging>jar</packaging>
     <url>http://airavata.apache.org</url>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-worker-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

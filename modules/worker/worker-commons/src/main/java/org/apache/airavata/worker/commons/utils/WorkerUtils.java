@@ -2,6 +2,7 @@ package org.apache.airavata.worker.commons.utils;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.*;
@@ -189,6 +190,25 @@ public class WorkerUtils {
         } catch (Exception e) {
             throw new WorkerException("Error persisting job status"
                     + e.getLocalizedMessage(), e);
+        }
+    }
+
+    public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
+        switch (resourceJobManagerType) {
+            case FORK:
+                return "UGE_Groovy.template";
+            case PBS:
+                return "PBS_Groovy.template";
+            case SLURM:
+                return "SLURM_Groovy.template";
+            case UGE:
+                return "UGE_Groovy.template";
+            case LSF:
+                return "LSF_Groovy.template";
+            case CLOUD:
+                return "CLOUD_Groovy.template";
+            default:
+                return null;
         }
     }
 }

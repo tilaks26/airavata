@@ -19,7 +19,7 @@
 *
 */
 
-package org.apache.airavata.gfac.impl.task;
+package org.apache.airavata.worker.task.jobsubmission.impl;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -29,7 +29,6 @@ import de.fzj.unicore.bes.faults.UnknownActivityIdentifierFault;
 import de.fzj.unicore.uas.client.StorageClient;
 import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
@@ -43,11 +42,9 @@ import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
-import org.apache.airavata.gfac.impl.task.utils.bes.*;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -63,7 +60,6 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.xmlbeans.XmlCursor;
-import org.ggf.schemas.bes.x2006.x08.besFactory.*;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

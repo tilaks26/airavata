@@ -19,11 +19,10 @@
  *
 */
 
-package org.apache.airavata.gfac.impl.task;
+package org.apache.airavata.worker.task.jobsubmission.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.gfac.core.*;
 import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;

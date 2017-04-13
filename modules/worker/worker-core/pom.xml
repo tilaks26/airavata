@@ -11,8 +11,8 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-worker-commons</artifactId>
-    <name>Worker Commons - Holds commons for all workers</name>
+    <artifactId>airavata-worker-core</artifactId>
+    <name>Worker Core - Holds core for all workers</name>
     <description>Environment setup task implementation.</description>
     <url>http://airavata.apache.org/</url>
 

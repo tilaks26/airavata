@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-worker-commons</artifactId>
+            <artifactId>airavata-worker-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -19,8 +19,8 @@
  */
 package org.apache.airavata.worker.commons.cluster;
 
-import org.apache.airavata.gfac.core.JobManagerConfiguration;
-import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
+import org.apache.airavata.worker.commons.authentication.AuthenticationInfo;
+import org.apache.airavata.worker.commons.utils.JobManagerConfiguration;
 
 public abstract class AbstractRemoteCluster implements RemoteCluster {
 

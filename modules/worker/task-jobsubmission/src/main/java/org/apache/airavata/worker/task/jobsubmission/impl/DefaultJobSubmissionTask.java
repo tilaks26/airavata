@@ -43,6 +43,7 @@ import org.apache.airavata.worker.commons.utils.JobManagerConfiguration;
 import org.apache.airavata.worker.commons.utils.WorkerUtils;
 import org.apache.airavata.worker.task.jobsubmission.JobSubmissionTask;
 import org.apache.airavata.worker.task.jobsubmission.utils.GroovyMap;
+import org.apache.airavata.worker.task.jobsubmission.utils.JobSubmissionFactory;
 import org.apache.airavata.worker.task.jobsubmission.utils.JobSubmissionUtils;
 import org.apache.airavata.worker.task.jobsubmission.utils.Script;
 import org.apache.commons.io.FileUtils;
@@ -82,7 +83,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 			ResourceJobManager resourceJobManager = JobSubmissionUtils.getResourceJobManager(processContext);
 		    JobManagerConfiguration jConfig = null;
 		    if (resourceJobManager != null) {
-			    jConfig = JobSubmissionUtils.getJobManagerConfiguration(resourceJobManager);
+			    jConfig = JobSubmissionFactory.getJobManagerConfiguration(resourceJobManager);
 		    }
 		    JobStatus jobStatus = new JobStatus();
 		    File jobFile = JobSubmissionUtils.createJobFile(groovyMap, taskContext, jConfig);

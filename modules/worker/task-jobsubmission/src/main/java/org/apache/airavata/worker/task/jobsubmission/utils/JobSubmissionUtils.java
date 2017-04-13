@@ -564,46 +564,4 @@ public class JobSubmissionUtils {
         outputPath = (outputPath.endsWith(File.separator) ? outputPath : outputPath + File.separator);
         return new File(outputPath + taskContext.getParentProcessContext() .getProcessId());
     }
-
-    public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager) throws WorkerException {
-        if(resourceJobManager == null)
-            return null;
-
-        ResourceConfig resourceConfig = JobSubmissionUtils.getResourceConfig(resourceJobManager.getResourceJobManagerType());
-        OutputParser outputParser;
-        try {
-            Class<? extends OutputParser> aClass = Class.forName(resourceConfig.getCommandOutputParser()).asSubclass
-                    (OutputParser.class);
-            outputParser = aClass.getConstructor().newInstance();
-        } catch (Exception e) {
-            throw new WorkerException("Error while instantiating output parser for " + resourceJobManager
-                    .getResourceJobManagerType().name());
-        }
-
-        String templateFileName = WorkerUtils.getTemplateFileName(resourceJobManager.getResourceJobManagerType());
-        switch (resourceJobManager.getResourceJobManagerType()) {
-            case PBS:
-                return new PBSJobConfiguration(templateFileName, ".pbs", resourceJobManager.getJobManagerBinPath(),
-                        resourceJobManager.getJobManagerCommands(), outputParser);
-            case SLURM:
-                return new SlurmJobConfiguration(templateFileName, ".slurm", resourceJobManager
-                        .getJobManagerBinPath(), resourceJobManager.getJobManagerCommands(), outputParser);
-            case LSF:
-                return new LSFJobConfiguration(templateFileName, ".lsf", resourceJobManager.getJobManagerBinPath(),
-                        resourceJobManager.getJobManagerCommands(), outputParser);
-            case UGE:
-                return new UGEJobConfiguration(templateFileName, ".pbs", resourceJobManager.getJobManagerBinPath(),
-                        resourceJobManager.getJobManagerCommands(), outputParser);
-            case FORK:
-                return new ForkJobConfiguration(templateFileName, ".sh", resourceJobManager.getJobManagerBinPath(),
-                        resourceJobManager.getJobManagerCommands(), outputParser);
-            // We don't have a job configuration manager for CLOUD type
-            default:
-                return null;
-        }
-    }
-
-    private static ResourceConfig getResourceConfig(ResourceJobManagerType resourceJobManagerType) {
-        return resources.get(resourceJobManagerType);
-    }
 }

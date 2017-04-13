@@ -53,6 +53,11 @@
             <artifactId>snakeyaml</artifactId>
             <version>${snakeyaml.version}</version>
         </dependency>
+        <!-- Guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

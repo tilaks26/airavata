@@ -21,9 +21,9 @@
 package org.apache.airavata.worker.task.jobsubmission;
 
 import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.worker.commons.context.TaskContext;
-import org.apache.airavata.worker.commons.task.Task;
-import org.apache.airavata.worker.commons.task.TaskException;
+import org.apache.airavata.worker.core.context.TaskContext;
+import org.apache.airavata.worker.core.task.Task;
+import org.apache.airavata.worker.core.task.TaskException;
 
 /**
  * Created by goshenoy on 4/12/17.

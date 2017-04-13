@@ -21,9 +21,9 @@
 package org.apache.airavata.worker.task.jobsubmission.config;
 
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.airavata.worker.commons.cluster.OutputParser;
-import org.apache.airavata.worker.commons.cluster.RawCommandInfo;
-import org.apache.airavata.worker.commons.utils.JobManagerConfiguration;
+import org.apache.airavata.worker.core.cluster.OutputParser;
+import org.apache.airavata.worker.core.cluster.RawCommandInfo;
+import org.apache.airavata.worker.core.utils.JobManagerConfiguration;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

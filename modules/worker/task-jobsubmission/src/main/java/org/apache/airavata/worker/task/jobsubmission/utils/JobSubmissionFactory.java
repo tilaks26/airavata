@@ -3,14 +3,14 @@ package org.apache.airavata.worker.task.jobsubmission.utils;
 
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.worker.commons.cluster.OutputParser;
-import org.apache.airavata.worker.commons.config.JobSubmitterTaskConfig;
-import org.apache.airavata.worker.commons.config.ResourceConfig;
-import org.apache.airavata.worker.commons.config.WorkerYamlConfigruation;
-import org.apache.airavata.worker.commons.exceptions.WorkerException;
-import org.apache.airavata.worker.commons.utils.WorkerFactory;
-import org.apache.airavata.worker.commons.utils.JobManagerConfiguration;
-import org.apache.airavata.worker.commons.utils.WorkerUtils;
+import org.apache.airavata.worker.core.cluster.OutputParser;
+import org.apache.airavata.worker.core.config.JobSubmitterTaskConfig;
+import org.apache.airavata.worker.core.config.ResourceConfig;
+import org.apache.airavata.worker.core.config.WorkerYamlConfigruation;
+import org.apache.airavata.worker.core.exceptions.WorkerException;
+import org.apache.airavata.worker.core.utils.WorkerFactory;
+import org.apache.airavata.worker.core.utils.JobManagerConfiguration;
+import org.apache.airavata.worker.core.utils.WorkerUtils;
 import org.apache.airavata.worker.task.jobsubmission.JobSubmissionTask;
 import org.apache.airavata.worker.task.jobsubmission.config.*;
 import org.slf4j.Logger;
@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by goshenoy on 4/13/17.

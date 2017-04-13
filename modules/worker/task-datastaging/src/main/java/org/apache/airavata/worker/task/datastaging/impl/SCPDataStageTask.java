@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.airavata.worker.task.datastaging.handler;
+package org.apache.airavata.worker.task.datastaging.impl;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;

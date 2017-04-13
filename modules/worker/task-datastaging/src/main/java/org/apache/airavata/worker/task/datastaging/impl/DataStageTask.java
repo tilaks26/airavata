@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.airavata.worker.task.datastaging.handler;
+package org.apache.airavata.worker.task.datastaging.impl;
 
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;

@@ -24,12 +24,12 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>task-env-setup</module>
+                <module>task-envsetup</module>
             </modules>
         </profile>
     </profiles>
     <modules>
-        <module>task-job-submission</module>
+        <module>task-jobsubmission</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.worker.commons.context;
+package org.apache.airavata.worker.core.context;
 
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.model.application.io.InputDataObjectType;

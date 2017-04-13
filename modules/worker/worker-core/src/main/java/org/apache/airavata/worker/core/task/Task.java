@@ -17,11 +17,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.worker.commons.task;
+package org.apache.airavata.worker.core.task;
 
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.worker.commons.context.TaskContext;
+import org.apache.airavata.worker.core.context.TaskContext;
 
 import java.util.Map;
 

@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.worker.commons.task;
+package org.apache.airavata.worker.core.task;
 
 public class TaskException extends Exception {
 	private static final long serialVersionUID = 8662332011259328779L;

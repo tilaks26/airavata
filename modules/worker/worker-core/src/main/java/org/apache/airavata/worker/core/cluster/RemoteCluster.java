@@ -17,13 +17,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.worker.commons.cluster;
+package org.apache.airavata.worker.core.cluster;
 
 import com.jcraft.jsch.Session;
 import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.worker.commons.authentication.AuthenticationInfo;
-import org.apache.airavata.worker.commons.exceptions.WorkerException;
-import org.apache.airavata.worker.commons.exceptions.SSHApiException;
+import org.apache.airavata.worker.core.authentication.AuthenticationInfo;
+import org.apache.airavata.worker.core.exceptions.WorkerException;
+import org.apache.airavata.worker.core.exceptions.SSHApiException;
 
 import java.util.List;
 import java.util.Map;

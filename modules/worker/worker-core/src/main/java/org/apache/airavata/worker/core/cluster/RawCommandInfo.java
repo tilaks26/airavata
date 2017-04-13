@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.worker.commons.cluster;
+package org.apache.airavata.worker.core.cluster;
 
 /**
  * The raw command information. String returned by getCommand is directly executed in SSH

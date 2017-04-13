@@ -17,10 +17,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.worker.commons.cluster;
+package org.apache.airavata.worker.core.cluster;
 
-import org.apache.airavata.worker.commons.authentication.AuthenticationInfo;
-import org.apache.airavata.worker.commons.utils.JobManagerConfiguration;
+import org.apache.airavata.worker.core.authentication.AuthenticationInfo;
+import org.apache.airavata.worker.core.utils.JobManagerConfiguration;
 
 public abstract class AbstractRemoteCluster implements RemoteCluster {
 

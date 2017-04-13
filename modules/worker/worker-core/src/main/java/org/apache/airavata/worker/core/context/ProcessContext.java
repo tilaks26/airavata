@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.worker.commons.context;
+package org.apache.airavata.worker.core.context;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.core.Publisher;
@@ -43,10 +43,10 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.worker.commons.authentication.SSHKeyAuthentication;
-import org.apache.airavata.worker.commons.cluster.RemoteCluster;
-import org.apache.airavata.worker.commons.cluster.ServerInfo;
-import org.apache.airavata.worker.commons.exceptions.WorkerException;
+import org.apache.airavata.worker.core.authentication.SSHKeyAuthentication;
+import org.apache.airavata.worker.core.cluster.RemoteCluster;
+import org.apache.airavata.worker.core.cluster.ServerInfo;
+import org.apache.airavata.worker.core.exceptions.WorkerException;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

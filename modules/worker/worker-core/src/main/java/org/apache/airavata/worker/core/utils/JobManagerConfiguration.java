@@ -1,7 +1,7 @@
-package org.apache.airavata.worker.commons.utils;
+package org.apache.airavata.worker.core.utils;
 
-import org.apache.airavata.worker.commons.cluster.OutputParser;
-import org.apache.airavata.worker.commons.cluster.RawCommandInfo;
+import org.apache.airavata.worker.core.cluster.OutputParser;
+import org.apache.airavata.worker.core.cluster.RawCommandInfo;
 
 /**
  * Created by goshenoy on 4/12/17.

@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.worker.commons.authentication;
+package org.apache.airavata.worker.core.authentication;
 
 /**
  * Public key authentication for vanilla SSH.

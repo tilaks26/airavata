@@ -17,12 +17,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.worker.commons.config;
+package org.apache.airavata.worker.core.config;
 
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.worker.commons.exceptions.WorkerException;
+import org.apache.airavata.worker.core.exceptions.WorkerException;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;

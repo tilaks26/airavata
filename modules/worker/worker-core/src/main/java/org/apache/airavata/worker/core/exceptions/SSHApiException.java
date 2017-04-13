@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.worker.commons.exceptions;
+package org.apache.airavata.worker.core.exceptions;
 
 /**
  * An exception class to wrap SSH command execution related errors.

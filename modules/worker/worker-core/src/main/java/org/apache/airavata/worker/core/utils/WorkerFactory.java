@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.airavata.worker.commons.utils;
+package org.apache.airavata.worker.core.utils;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -26,9 +26,9 @@ import com.google.common.cache.RemovalListener;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.worker.commons.config.ResourceConfig;
-import org.apache.airavata.worker.commons.config.WorkerYamlConfigruation;
-import org.apache.airavata.worker.commons.exceptions.WorkerException;
+import org.apache.airavata.worker.core.config.ResourceConfig;
+import org.apache.airavata.worker.core.config.WorkerYamlConfigruation;
+import org.apache.airavata.worker.core.exceptions.WorkerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

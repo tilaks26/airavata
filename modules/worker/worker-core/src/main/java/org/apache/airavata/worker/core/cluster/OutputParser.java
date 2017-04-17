@@ -19,9 +19,9 @@
  */
 package org.apache.airavata.worker.core.cluster;
 
-import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.worker.core.exceptions.SSHApiException;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.worker.core.exceptions.WorkerException;
 
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public interface OutputParser {
      * @param rawOutput
      * @return
      */
-    public String parseJobSubmission(String rawOutput)throws GFacException;
+    public String parseJobSubmission(String rawOutput)throws WorkerException;
 
 
     /**
@@ -48,14 +48,14 @@ public interface OutputParser {
      * @param jobID
      * @param rawOutput
      */
-    public JobStatus parseJobStatus(String jobID, String rawOutput)throws GFacException;
+    public JobStatus parseJobStatus(String jobID, String rawOutput)throws WorkerException;
 
     /**
      * This can be used to parseSingleJob a big output and get multipleJob statuses
      * @param statusMap list of status map will return and key will be the job ID
      * @param rawOutput
      */
-    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput)throws GFacException;
+    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput)throws WorkerException;
 
     /**
      * filter the jobId value of given JobName from rawOutput
@@ -64,5 +64,5 @@ public interface OutputParser {
      * @return
      * @throws SSHApiException
      */
-    public String parseJobId(String jobName, String rawOutput) throws GFacException;
+    public String parseJobId(String jobName, String rawOutput) throws WorkerException;
 }

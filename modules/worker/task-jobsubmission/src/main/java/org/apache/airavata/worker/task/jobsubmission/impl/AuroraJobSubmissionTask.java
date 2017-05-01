@@ -24,15 +24,6 @@ import org.apache.airavata.cloud.aurora.client.AuroraThriftClient;
 import org.apache.airavata.cloud.aurora.client.bean.*;
 import org.apache.airavata.cloud.aurora.util.AuroraThriftClientUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.core.GroovyMap;
-import org.apache.airavata.gfac.core.Script;
-import org.apache.airavata.gfac.core.context.ProcessContext;
-import org.apache.airavata.gfac.core.context.TaskContext;
-import org.apache.airavata.gfac.core.task.JobSubmissionTask;
-import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.gfac.impl.AuroraUtils;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
@@ -41,6 +32,16 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.worker.core.context.ProcessContext;
+import org.apache.airavata.worker.core.context.TaskContext;
+import org.apache.airavata.worker.core.exceptions.WorkerException;
+import org.apache.airavata.worker.core.task.TaskException;
+import org.apache.airavata.worker.core.utils.WorkerUtils;
+import org.apache.airavata.worker.task.jobsubmission.JobSubmissionTask;
+import org.apache.airavata.worker.task.jobsubmission.utils.AuroraUtils;
+import org.apache.airavata.worker.task.jobsubmission.utils.GroovyMap;
+import org.apache.airavata.worker.task.jobsubmission.utils.JobSubmissionUtils;
+import org.apache.airavata.worker.task.jobsubmission.utils.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,16 +50,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class AuroraJobSubmissionTask implements JobSubmissionTask{
+public class AuroraJobSubmissionTask implements JobSubmissionTask {
 
     private static final Logger log = LoggerFactory.getLogger(AuroraJobSubmissionTask.class);
-
-    @Override
-    public JobStatus cancel(TaskContext taskcontext) throws TaskException {
-        JobStatus jobStatus = new JobStatus();
-        jobStatus.setJobState(JobState.ACTIVE);
-        return jobStatus;
-    }
 
     @Override
     public void init(Map<String, String> propertyMap) throws TaskException {
@@ -71,7 +65,7 @@ public class AuroraJobSubmissionTask implements JobSubmissionTask{
         ProcessContext processContext = taskContext.getParentProcessContext();
         JobModel jobModel = processContext.getJobModel();
         jobModel.setTaskId(taskContext.getTaskId());
-        String jobIdAndName = "A" + GFacUtils.generateJobName();
+        String jobIdAndName = "A" + JobSubmissionUtils.generateJobName();
         jobModel.setJobName(jobIdAndName);
         JobStatus jobStatus = new JobStatus();
         jobStatus.setJobState(JobState.SUBMITTED);
@@ -79,10 +73,10 @@ public class AuroraJobSubmissionTask implements JobSubmissionTask{
         try {
             JobKeyBean jobKey = new JobKeyBean(AuroraUtils.ENVIRONMENT, AuroraUtils.ROLE, jobIdAndName);
             IdentityBean owner = new IdentityBean(AuroraUtils.ROLE);
-            GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext, taskContext);
+            GroovyMap groovyMap = JobSubmissionUtils.createGroovyMap(processContext, taskContext);
             groovyMap.add(Script.JOB_SUBMITTER_COMMAND, "sh");
-            String templateFileName = GFacUtils.getTemplateFileName(ResourceJobManagerType.CLOUD);
-            String script = GFacUtils.generateScript(groovyMap, templateFileName);
+            String templateFileName = WorkerUtils.getTemplateFileName(ResourceJobManagerType.CLOUD);
+            String script = JobSubmissionUtils.generateScript(groovyMap, templateFileName);
             Set<ProcessBean> processes = new LinkedHashSet<>();
             ProcessBean process_1 = new ProcessBean("main_process", script, false);
             processes.add(process_1);
@@ -118,8 +112,8 @@ public class AuroraJobSubmissionTask implements JobSubmissionTask{
             jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskContext.getParentProcessContext().setJobModel(jobModel);
 
-            GFacUtils.saveJobModel(processContext, jobModel);
-            GFacUtils.saveJobStatus(processContext, jobModel);
+            JobSubmissionUtils.saveJobModel(processContext, jobModel);
+            WorkerUtils.saveJobStatus(processContext, jobModel);
             taskStatus.setReason("Successfully submitted job to Aurora");
         } catch (Throwable e) {
             String msg = "Error occurred while submitting Aurora job";
@@ -135,8 +129,8 @@ public class AuroraJobSubmissionTask implements JobSubmissionTask{
 
         taskContext.setTaskStatus(taskStatus);
         try {
-            GFacUtils.saveAndPublishTaskStatus(taskContext);
-        } catch (GFacException e) {
+            WorkerUtils.saveAndPublishTaskStatus(taskContext);
+        } catch (WorkerException e) {
             log.error("Error while saving task status", e);
         }
         return taskStatus;
@@ -150,5 +144,12 @@ public class AuroraJobSubmissionTask implements JobSubmissionTask{
     @Override
     public TaskTypes getType() {
         return TaskTypes.JOB_SUBMISSION;
+    }
+
+    @Override
+    public JobStatus cancel(TaskContext taskcontext) throws TaskException {
+        JobStatus jobStatus = new JobStatus();
+        jobStatus.setJobState(JobState.ACTIVE);
+        return jobStatus;
     }
 }

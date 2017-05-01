@@ -240,7 +240,7 @@ public class JobSubmissionUtils {
         }
     }
 
-    private static String generateScript(GroovyMap groovyMap, String templateName) throws WorkerException {
+    public static String generateScript(GroovyMap groovyMap, String templateName) throws WorkerException {
         URL templateUrl = ApplicationSettings.loadFile(templateName);
         if (templateUrl == null) {
             String error = "Template file '" + templateName + "' not found";
@@ -526,7 +526,7 @@ public class JobSubmissionUtils {
         return null;
     }
 
-    private static int generateJobName() {
+    public static int generateJobName() {
         Random random = new Random();
         int i = random.nextInt(Integer.MAX_VALUE);
         i = i + 99999999;

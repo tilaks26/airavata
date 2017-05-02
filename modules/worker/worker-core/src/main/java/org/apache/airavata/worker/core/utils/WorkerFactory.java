@@ -36,6 +36,7 @@ import org.apache.airavata.worker.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.worker.core.cluster.ServerInfo;
 import org.apache.airavata.worker.core.config.ResourceConfig;
 import org.apache.airavata.worker.core.config.WorkerYamlConfigruation;
+import org.apache.airavata.worker.core.context.ProcessContext;
 import org.apache.airavata.worker.core.exceptions.WorkerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,17 @@ public class WorkerFactory {
 
     public static ResourceConfig getResourceConfig(ResourceJobManagerType resourceJobManagerType) {
         return resources.get(resourceJobManagerType);
+    }
+
+    public static SSHKeyAuthentication getStorageSSHKeyAuthentication(ProcessContext pc)
+            throws WorkerException, CredentialStoreException {
+        try {
+            return getSshKeyAuthentication(pc.getGatewayId(),
+                    pc.getStorageResourceLoginUserName(),
+                    pc.getStorageResourceCredentialToken());
+        }  catch (ApplicationSettingsException | IllegalAccessException | InstantiationException e) {
+            throw new WorkerException("Couldn't build ssh authentication object", e);
+        }
     }
 
     public static SSHKeyAuthentication getSshKeyAuthentication(String gatewayId,

@@ -31,17 +31,6 @@ import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
-import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.core.SSHApiException;
-import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.core.cluster.ServerInfo;
-import org.apache.airavata.gfac.core.context.ProcessContext;
-import org.apache.airavata.gfac.core.context.TaskContext;
-import org.apache.airavata.gfac.core.task.JobSubmissionTask;
-import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.gfac.impl.Factory;
-import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
@@ -59,7 +48,21 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.worker.core.authentication.AuthenticationInfo;
+import org.apache.airavata.worker.core.cluster.ServerInfo;
+import org.apache.airavata.worker.core.context.ProcessContext;
+import org.apache.airavata.worker.core.context.TaskContext;
+import org.apache.airavata.worker.core.exceptions.SSHApiException;
+import org.apache.airavata.worker.core.exceptions.WorkerException;
+import org.apache.airavata.worker.core.task.TaskException;
+import org.apache.airavata.worker.core.utils.SSHUtils;
+import org.apache.airavata.worker.core.utils.WorkerFactory;
+import org.apache.airavata.worker.core.utils.WorkerUtils;
+import org.apache.airavata.worker.task.jobsubmission.JobSubmissionTask;
+import org.apache.airavata.worker.task.jobsubmission.utils.JobSubmissionUtils;
+import org.apache.airavata.worker.task.jobsubmission.utils.bes.*;
 import org.apache.xmlbeans.XmlCursor;
+import org.ggf.schemas.bes.x2006.x08.besFactory.*;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +108,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             // con't reuse if UserDN has been changed.
             secProperties = getSecurityConfig(processContext);
             // try secProperties = secProperties.clone() if we can't use already initialized ClientConfigurations.
-        } catch (GFacException e) {
+        } catch (WorkerException e) {
             String msg = "Unicorn security context initialization error";
             log.error(msg, e);
             taskStatus.setState(TaskState.FAILED);
@@ -115,10 +118,10 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
 
         try {
             JobSubmissionProtocol protocol = processContext.getJobSubmissionProtocol();
-            JobSubmissionInterface jobSubmissionInterface = GFacUtils.getPreferredJobSubmissionInterface(processContext);
+            JobSubmissionInterface jobSubmissionInterface = JobSubmissionUtils.getPreferredJobSubmissionInterface(processContext);
             String factoryUrl = null;
             if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
-                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(
+                UnicoreJobSubmission unicoreJobSubmission = JobSubmissionUtils.getUnicoreJobSubmission(
                         jobSubmissionInterface.getJobSubmissionInterfaceId());
                 factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
             }
@@ -167,8 +170,8 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             jobDetails.setJobDescription(activityEpr.toString());
             jobDetails.setJobStatuses(Arrays.asList(new JobStatus(JobState.SUBMITTED)));
             processContext.setJobModel(jobDetails);
-            GFacUtils.saveJobModel(processContext, jobDetails);
-            GFacUtils.saveJobStatus(processContext, jobDetails);
+            JobSubmissionUtils.saveJobModel(processContext, jobDetails);
+            WorkerUtils.saveJobStatus(processContext, jobDetails);
             log.info(formatStatusMessage(activityEpr.getAddress()
                     .getStringValue(), factory.getActivityStatus(activityEpr)
                     .toString()));
@@ -205,8 +208,8 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
                 JobState applicationJobStatus = JobState.CANCELED;
                 jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
-                GFacUtils.saveJobStatus(processContext, jobDetails);
-                throw new GFacException(
+                WorkerUtils.saveJobStatus(processContext, jobDetails);
+                throw new WorkerException(
                         processContext.getExperimentId() + "Job Canceled");
             } else if (activityStatus.getState() == ActivityStateEnumeration.FINISHED) {
                 try {
@@ -215,7 +218,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                 }
                 JobState applicationJobStatus = JobState.COMPLETE;
                 jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
-                GFacUtils.saveJobStatus(processContext, jobDetails);
+                WorkerUtils.saveJobStatus(processContext, jobDetails);
                 log.info("Job Id: {}, exit code: {}, exit status: {}", jobDetails.getJobId(),
                         activityStatus.getExitCode(), ActivityStateEnumeration.FINISHED.toString());
 
@@ -228,7 +231,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             if (copyOutput != null) {
                 copyOutputFilesToStorage(taskContext, copyOutput);
                 for (OutputDataObjectType outputDataObjectType : copyOutput) {
-                    GFacUtils.saveExperimentOutput(processContext, outputDataObjectType.getName(), outputDataObjectType.getValue());
+                    WorkerUtils.saveExperimentOutput(processContext, outputDataObjectType.getName(), outputDataObjectType.getValue());
                 }
             }
 //            dt.publishFinalOutputs();
@@ -244,13 +247,13 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         return taskStatus;
     }
 
-    private void copyOutputFilesToStorage(TaskContext taskContext, List<OutputDataObjectType> copyOutput) throws GFacException {
+    private void copyOutputFilesToStorage(TaskContext taskContext, List<OutputDataObjectType> copyOutput) throws WorkerException {
         ProcessContext pc = taskContext.getParentProcessContext();
         String remoteFilePath = null, fileName = null, localFilePath = null;
         try {
-            authenticationInfo = Factory.getStorageSSHKeyAuthentication(pc);
+            authenticationInfo = WorkerFactory.getStorageSSHKeyAuthentication(pc);
             ServerInfo serverInfo = pc.getComputeResourceServerInfo();
-            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
+            Session sshSession = WorkerFactory.getSSHSession(authenticationInfo, serverInfo);
             for (OutputDataObjectType output : copyOutput) {
                 switch (output.getType()) {
                     case STDERR: case STDOUT: case STRING: case URI:
@@ -259,7 +262,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                             localFilePath = localFilePath.substring(localFilePath.indexOf("://") + 2, localFilePath.length());
                         }
                         fileName = localFilePath.substring(localFilePath.lastIndexOf("/") + 1);
-                        URI destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, fileName);
+                        URI destinationURI = WorkerUtils.getDestinationURI(taskContext, hostName, inputPath, fileName);
                         remoteFilePath = destinationURI.getPath();
                         log.info("SCP local file :{} -> from remote :{}", localFilePath, remoteFilePath);
                         SSHUtils.scpTo(localFilePath, remoteFilePath, sshSession);
@@ -271,18 +274,18 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             }
         } catch (IOException | JSchException | SSHApiException | URISyntaxException | CredentialStoreException e) {
             log.error("Error while coping local file " + localFilePath + " to remote " + remoteFilePath, e);
-            throw new GFacException("Error while scp output files to remote storage file location", e);
+            throw new WorkerException("Error while scp output files to remote storage file location", e);
         }
     }
 
-    private void copyInputFilesToLocal(TaskContext taskContext) throws GFacException {
+    private void copyInputFilesToLocal(TaskContext taskContext) throws WorkerException {
         ProcessContext pc = taskContext.getParentProcessContext();
         StorageResourceDescription storageResource = pc.getStorageResource();
 
         if (storageResource != null) {
             hostName = storageResource.getHostName();
         } else {
-            throw new GFacException("Storage Resource is null");
+            throw new WorkerException("Storage Resource is null");
         }
         inputPath = pc.getStorageFileSystemRootLocation();
         inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
@@ -290,9 +293,9 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         String remoteFilePath = null, fileName = null, localFilePath = null;
         URI remoteFileURI = null;
         try {
-            authenticationInfo = Factory.getStorageSSHKeyAuthentication(pc);
+            authenticationInfo = WorkerFactory.getStorageSSHKeyAuthentication(pc);
             ServerInfo serverInfo = pc.getStorageResourceServerInfo();
-            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
+            Session sshSession = WorkerFactory.getSSHSession(authenticationInfo, serverInfo);
 
             List<InputDataObjectType> processInputs = pc.getProcessModel().getProcessInputs();
             for (InputDataObjectType input : processInputs) {
@@ -308,11 +311,11 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             }
         } catch (IOException | JSchException | SSHApiException | URISyntaxException e) {
             log.error("Error while coping remote file " + remoteFilePath + " to local " + localFilePath, e);
-            throw new GFacException("Error while scp input files to local file location", e);
+            throw new WorkerException("Error while scp input files to local file location", e);
         } catch (CredentialStoreException e) {
             String msg = "Authentication issue, make sure you are passing valid credential token";
             log.error(msg, e);
-            throw new GFacException(msg, e);
+            throw new WorkerException(msg, e);
         }
     }
 
@@ -324,7 +327,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         processContext.setOutputDir(localPath);
     }
 
-    private DefaultClientConfiguration getSecurityConfig(ProcessContext pc) throws GFacException {
+    private DefaultClientConfiguration getSecurityConfig(ProcessContext pc) throws WorkerException {
         DefaultClientConfiguration clientConfig = null;
         try {
             UNICORESecurityContext unicoreSecurityContext = SecurityUtils.getSecurityContext(pc);
@@ -339,9 +342,9 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                 clientConfig = unicoreSecurityContext.getDefaultConfiguration(false);
             }
         } catch (RegistryException e) {
-            throw new GFacException("Error! reading user configuration data from registry", e);
+            throw new WorkerException("Error! reading user configuration data from registry", e);
         } catch (ApplicationSettingsException e) {
-            throw new GFacException("Error! retrieving default client configurations", e);
+            throw new WorkerException("Error! retrieving default client configurations", e);
         }
 
         return clientConfig;
@@ -380,8 +383,8 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         }
     }
 
-    private void sendNotification(ProcessContext processContext,  JobModel jobModel) throws GFacException {
-        GFacUtils.saveJobStatus(processContext, jobModel);
+    private void sendNotification(ProcessContext processContext,  JobModel jobModel) throws WorkerException {
+        WorkerUtils.saveJobStatus(processContext, jobModel);
     }
 
     @Override
@@ -467,9 +470,9 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
      * EndpointReference need to be saved to make cancel work.
      *
      * @param processContext
-     * @throws GFacException
+     * @throws WorkerException
      */
-    public boolean cancelJob(ProcessContext processContext) throws GFacException {
+    public boolean cancelJob(ProcessContext processContext) throws WorkerException {
         try {
             String activityEpr = processContext.getJobModel().getJobDescription();
             // initSecurityProperties(processContext);
@@ -479,7 +482,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             String interfaceId = processContext.getApplicationInterfaceDescription().getApplicationInterfaceId();
             String factoryUrl = null;
             if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
-                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(interfaceId);
+                UnicoreJobSubmission unicoreJobSubmission = JobSubmissionUtils.getUnicoreJobSubmission(interfaceId);
                 factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
             }
             EndpointReferenceType epr = EndpointReferenceType.Factory
@@ -490,7 +493,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             factory.terminateActivity(eprt);
             return true;
         } catch (Exception e) {
-            throw new GFacException(e.getLocalizedMessage(), e);
+            throw new WorkerException(e.getLocalizedMessage(), e);
         }
 
     }

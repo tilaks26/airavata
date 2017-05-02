@@ -281,7 +281,7 @@ public class JobSubmissionUtils {
         }
     }
 
-    private static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext processContext) throws AppCatalogException {
+    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext processContext) throws AppCatalogException {
         try {
             String resourceHostId = processContext.getComputeResourceDescription().getComputeResourceId();
             JobSubmissionProtocol preferredJobSubmissionProtocol = processContext.getPreferredJobSubmissionProtocol();

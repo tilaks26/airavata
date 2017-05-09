@@ -46,6 +46,10 @@ public class WorkerYamlConfigruation {
 	private static final String EMAIL_PARSER = "emailParser";
 	private static final String RESOURCE_EMAIL_ADDRESS = "resourceEmailAddresses";
 	private static final String PROPERTIES = "properties";
+	public static final String TASK_IMPLEMENTATIONS = "taskImplementations";
+	private static final String TASK = "task";
+	private List<TaskImplementationConfig> taskImplementations = new ArrayList<>();
+
 
 	private List<JobSubmitterTaskConfig> jobSubmitters = new ArrayList<>();
 	private List<DataTransferTaskConfig> fileTransferTasks = new ArrayList<>();
@@ -54,7 +58,7 @@ public class WorkerYamlConfigruation {
 
 	public WorkerYamlConfigruation() throws WorkerException {
 		InputStream resourceAsStream = WorkerYamlConfigruation.class.getClassLoader().
-				getResourceAsStream("gfac-config.yaml");
+				getResourceAsStream("worker-config.yaml");
 		parse(resourceAsStream);
 	}
 
@@ -130,6 +134,18 @@ public class WorkerYamlConfigruation {
 					resources.add(resourceConfig);
 				}
 			}
+
+			List<Map<String,Object >> taskImplementationYaml = (List<Map<String, Object>>) loadMap.get(TASK_IMPLEMENTATIONS);
+			TaskImplementationConfig taskImplementationConfig;
+			if (taskImplementationYaml != null) {
+				for (Map<String, Object> taskImplementations : taskImplementationYaml) {
+					taskImplementationConfig = new TaskImplementationConfig();
+					identifier = ((String) taskImplementations.get(TASK));
+					taskImplementationConfig.setTaskType(identifier);
+					taskImplementationConfig.setImplementationClass(((String) taskImplementations.get(TASK_CLASS)));
+					this.taskImplementations.add(taskImplementationConfig);
+				}
+			}
 		}
 	}
 
@@ -145,6 +161,8 @@ public class WorkerYamlConfigruation {
 		return resources;
 	}
 
-
+	public List<TaskImplementationConfig> getTaskImplementations() {
+		return taskImplementations;
+	}
 
 }

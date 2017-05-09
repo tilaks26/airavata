@@ -23,6 +23,7 @@ package org.apache.airavata.messaging.core;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.WorkerConstants;
 import org.apache.airavata.messaging.core.impl.*;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
@@ -80,6 +81,21 @@ public class MessagingFactory {
         subscriber.listen(((connection, channel) -> new MessageConsumer(messageHandler, connection, channel)),
                 rProperties.getQueueName(),
                 new ArrayList<String>(){{add(DBEventManagerConstants.getRoutingKey(serviceName));}});
+
+        return subscriber;
+    }
+
+    public static Subscriber getWorkerEventSubscriber(final MessageHandler messageHandler, String taskName) throws AiravataException {
+        RabbitMQProperties rProperties = getProperties();
+
+        //FIXME: Set autoAck to false and handle possible situations
+        rProperties.setExchangeName(WorkerConstants.WORKER_EVENT_EXCHANGE_NAME)
+                .setQueueName(WorkerConstants.getQueueName(taskName))
+                .setAutoAck(false);
+        Subscriber subscriber = new RabbitMQSubscriber(rProperties);
+        subscriber.listen(((connection, channel) -> new MessageConsumer(messageHandler, connection, channel)),
+                rProperties.getQueueName(),
+                new ArrayList<String>(){{add(taskName);}});
 
         return subscriber;
     }

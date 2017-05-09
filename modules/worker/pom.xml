@@ -21,6 +21,7 @@
         <module>worker-core</module>
         <module>task-envsetup</module>
         <module>task-jobsubmission</module>
+        <module>worker-messaging</module>
     </modules>
 
     <profiles>

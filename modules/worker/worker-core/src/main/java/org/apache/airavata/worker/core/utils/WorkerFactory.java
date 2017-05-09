@@ -29,18 +29,22 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.worker.core.authentication.AuthenticationInfo;
 import org.apache.airavata.worker.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.worker.core.cluster.ServerInfo;
 import org.apache.airavata.worker.core.config.ResourceConfig;
+import org.apache.airavata.worker.core.config.TaskImplementationConfig;
 import org.apache.airavata.worker.core.config.WorkerYamlConfigruation;
 import org.apache.airavata.worker.core.context.ProcessContext;
 import org.apache.airavata.worker.core.exceptions.WorkerException;
+import org.apache.airavata.worker.core.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -55,6 +59,7 @@ public class WorkerFactory {
     private static boolean isWorkerConfigurationLoaded = false;
     private static Map<ResourceJobManagerType, ResourceConfig> resources = new HashMap<>();
     private static Cache<String,Session> sessionCache;
+    private static Map<String, Task> taskImplementations = new HashMap<>();
 
     public static void loadConfiguration() throws WorkerException {
         if (!isWorkerConfigurationLoaded) {
@@ -63,9 +68,19 @@ public class WorkerFactory {
                 for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
                     resources.put(resourceConfig.getJobManagerType(), resourceConfig);
                 }
-            } catch (Exception e) {
+
+                for (TaskImplementationConfig taskImplementationConfig : config.getTaskImplementations()) {
+                    String taskClass = taskImplementationConfig.getImplementationClass();
+                    Class<?> aClass = Class.forName(taskClass);
+                    Constructor<?> constructor = aClass.getConstructor();
+                    Task task = (Task) constructor.newInstance();
+                    taskImplementations.put(taskImplementationConfig.getTaskType(), task);
+                }
+            }catch (Exception e) {
                 throw new WorkerException("Worker config issue", e);
             }
+
+
 
             sessionCache = CacheBuilder.newBuilder()
                     .expireAfterAccess(ServerSettings.getSessionCacheAccessTimeout(), TimeUnit.MINUTES)

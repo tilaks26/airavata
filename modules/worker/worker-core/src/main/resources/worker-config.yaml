@@ -18,76 +18,119 @@
 #
 ################################################################
 
-config:
- jobSubmitters:
-   - submissionProtocol: SSH
-     taskClass: org.apache.airavata.task.adapters.SSHJobSubmissionTask
-     properties:
-      - password: pwd123
-      - passPhrase: test
-      - privateKey: key
-      - publicKey: pubkey
+jobSubmitters:
+  - submissionProtocol: SSH
+    taskClass: org.apache.airavata.gfac.impl.task.DefaultJobSubmissionTask
+#   properties:
+#     - userName: airavata
+#       passPhrase: airavata
+#       privateKeyPath: /path/to/the/privatekey
+#       publicKeyPath: /path/to/the/publickey
+#       hostName: remote.client.hostName
 
-   - submissionProtocol: GSISSH
-     taskClass: org.apache.airavata.task.adapters.GSISSHJobSubmissionTask
+  - submissionProtocol: SSH_FORK
+    taskClass: org.apache.airavata.gfac.impl.task.ForkJobSubmissionTask
 
- commonTasks:
-    - type: SETUP
-      taskClass: org.apache.airavata.task.common.SetupTask
+  - submissionProtocol: LOCAL
+    taskClass: org.apache.airavata.gfac.impl.task.LocalJobSubmissionTask
 
-    - type: CLEANUP
-      taskClass: org.apache.airavata.task.common.CleanupTask
+  - submissionProtocol: CLOUD
+    taskClass: org.apache.airavata.gfac.impl.task.AuroraJobSubmissionTask
 
- fileTransferTasks:
-   - transferProtocol: SCP
-     taskClass: org.apache.airavata.task.adapters.SCPFileTransferTask
-     properties:
-      - password: pwd123
-      - passPhrase: test
-      - privateKey: key
-      - publicKey: pubkey
+# Following job subbmitters are not yet implemented.
 
-   - transferProtocol: HTTP
-     taskClass: org.apache.airavata.task.adapters.HTTPFileTransferTask
+ # - submissionProtocol: GSISSH
+ #   taskClass: org.apache.airavata.task.adapters.GSISSHJobSubmissionTask
+commonTasks:
+   - type: SETUP
+     taskClass: org.apache.airavata.task.common.SetupTask
 
-   - transferProtocol: GRIDFTP
-     taskClass: org.apache.airavata.task.adapters.GRIDFTPFileTransferTask
+   - type: CLEANUP
+     taskClass: org.apache.airavata.task.common.CleanupTask
 
- resources:
-   - jobManagerType: PBS
-     commandOutputParser: org.apache.airavata.commmand.PBSOutputParser
-     emailParser: org.apache.airavata.email.parser.PBSEmailParser
-     resourceEmailAddresses:
-       - pbsconsult@sdsc.edu  # gordon
-       - adm@trident.bigred2.uits.iu.edu # Bigred2
-       - root <adm@trident.bigred2.uits.iu.edu> # Bigred2
-       - root <adm@scyld.localdomain> # alamo
+fileTransferTasks:
+  - transferProtocol: SCP
+    taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
+  - transferProtocol: LOCAL
+    taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
 
-   - jobManagerType: SLURM
-     commandOutputParser: org.apache.airavata.commmand.SLURMOutputParser
-     emailParser: org.apache.airavata.email.parser.SLURMEmailParser
-     resourceEmailAddresses:
-       - SDSC Admin <slurm@comet-fe3.sdsc.edu> # comet
-       - slurm@batch1.stampede.tacc.utexas.edu # stampede
+# If your client doen't run the same instance where airavata server is running then you need to comment above
+# DataStageTask and uncomment SCPDataStageTask. To work with SCPDataStageTask, you either need to
+# provide ssh keys or password.
 
-   - jobManagerType: UGE
-     commandOutputParser: org.apache.airavata.commmand.UGEOutputParser
-     emailParser: org.apache.airavata.email.parser.UGEEmailParser
-     resourceEmailAddresses:
-       - ls4.tacc.utexas.edu # contain Lonestar
+#  - transferProtocol: SCP
+#    taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
+#    properties:
+#     - userName: airavata
+#       passPhrase: airavata
+#       privateKeyPath: /path/to/the/privatekey
+#       publicKeyPath: /path/to/the/publickey
+#       hostName: remote.client.hostName
+#       inputPath: /path/to/data/dir
+##      password: password
 
+# Following transfer tasks are not yet implemented.
+  #- transferProtocol: SFTP
+  #  taskClass: org.apache.airavata.task.adapters.SFTPFileTransferTask
 
- taskImplementations:
-   - task: ENV_SETUP
-     taskClass: org.apache.airavata.worker.task.envsetup.impl.EnvironmentSetupTask
+  #- transferProtocol: GRIDFTP
+  #  taskClass: org.apache.airavata.task.adapters.GRIDFTPFileTransferTask
 
-   - task: DATA_STAGING
-       taskClass: org.apache.airavata.worker.task.datastaging.impl.DataStageTask
+  #- transferProtocol: LOCAL
+  #  taskClass: org.apache.airavata.task.adapters.LocalFileTransferTask
 
-   - task: JOB_SUBMISSION
-       taskClass: org.apache.airavata.worker.task.jobsubmission.impl.DefaultJobSubmissionTask
+resources:
+  - jobManagerType: PBS
+    commandOutputParser: org.apache.airavata.gfac.impl.job.PBSOutputParser
+    emailParser: org.apache.airavata.gfac.monitor.email.parser.PBSEmailParser
+    resourceEmailAddresses:
+      - pbsconsult@sdsc.edu  # gordon
+      - adm@trident.bigred2.uits.iu.edu # Bigred2
+      - root <adm@trident.bigred2.uits.iu.edu> # Bigred2
+      - root <adm@scyld.localdomain> # alamo
+      - gordon-fe2.local # Gordon
 
-   - task: MONITORING
-       taskClass: org.apache.airavata.worker.task.envsetup.impl.EnvironmentSetupTask
+  - jobManagerType: SLURM
+    commandOutputParser: org.apache.airavata.gfac.impl.job.SlurmOutputParser
+    emailParser: org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser
+    resourceEmailAddresses:
+      - slurm@comet # comet
+      - slurm@batch1.stampede.tacc.utexas.edu # stampede
+      - root@master.ls5.tacc.utexas.edu # Lonestar 5
+      - slurm@jurecab01.zam.kfa-juelich.de # Jureca
+
+  - jobManagerType: UGE
+    commandOutputParser: org.apache.airavata.gfac.impl.job.UGEOutputParser
+    emailParser: org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser
+    resourceEmailAddresses:
+      - ls4.tacc.utexas.edu # contain Lonestar
+
+  - jobManagerType: LSF
+    commandOutputParser: org.apache.airavata.gfac.impl.job.LSFOutputParser
+    emailParser: org.apache.airavata.gfac.monitor.email.parser.LSFEmailParser
+    resourceEmailAddresses:
+      - iu.xsede.edu # test resource mail address
+
+  - jobManagerType: FORK
+    commandOutputParser: org.apache.airavata.gfac.impl.job.ForkOutputParser
+
+  - jobManagerType: AIRAVATA_CUSTOM
+    commandOutputParser: org.apache.airavata.gfac.impl.job.AiravataCustomCommandOutputParser
+    emailParser: org.apache.airavata.gfac.monitor.email.parser.AiravataCustomMailParser
+    resourceEmailAddresses:
+      - gw56jobs@scigap.org
+
+taskImplementations:
+ - task: ENV_SETUP
+   taskClass: org.apache.airavata.worker.task.envsetup.impl.EnvironmentSetupTask
+
+ - task: DATA_STAGING
+   taskClass: org.apache.airavata.worker.task.datastaging.impl.DataStageTask
+
+ - task: JOB_SUBMISSION
+   taskClass: org.apache.airavata.worker.task.jobsubmission.impl.DefaultJobSubmissionTask
+
+ - task: MONITORING
+   taskClass: org.apache.airavata.worker.task.envsetup.impl.EnvironmentSetupTask
 
 

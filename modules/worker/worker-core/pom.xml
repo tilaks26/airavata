@@ -16,6 +16,10 @@
     <description>Environment setup task implementation.</description>
     <url>http://airavata.apache.org/</url>
 
+    <properties>
+        <testng.version>6.9.10</testng.version>
+    </properties>
+
     <dependencies>
         <!-- Logging -->
         <dependency>
@@ -68,6 +72,13 @@
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
             <version>${curator.version}</version>
+        </dependency>
+
+        <!-- testng dependency -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
         </dependency>
     </dependencies>
 

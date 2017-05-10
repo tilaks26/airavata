@@ -59,7 +59,6 @@ public class WorkerFactory {
     private static boolean isWorkerConfigurationLoaded = false;
     private static Map<ResourceJobManagerType, ResourceConfig> resources = new HashMap<>();
     private static Cache<String,Session> sessionCache;
-    private static Map<String, Task> taskImplementations = new HashMap<>();
 
     public static void loadConfiguration() throws WorkerException {
         if (!isWorkerConfigurationLoaded) {
@@ -68,19 +67,9 @@ public class WorkerFactory {
                 for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
                     resources.put(resourceConfig.getJobManagerType(), resourceConfig);
                 }
-
-                for (TaskImplementationConfig taskImplementationConfig : config.getTaskImplementations()) {
-                    String taskClass = taskImplementationConfig.getImplementationClass();
-                    Class<?> aClass = Class.forName(taskClass);
-                    Constructor<?> constructor = aClass.getConstructor();
-                    Task task = (Task) constructor.newInstance();
-                    taskImplementations.put(taskImplementationConfig.getTaskType(), task);
-                }
             }catch (Exception e) {
                 throw new WorkerException("Worker config issue", e);
             }
-
-
 
             sessionCache = CacheBuilder.newBuilder()
                     .expireAfterAccess(ServerSettings.getSessionCacheAccessTimeout(), TimeUnit.MINUTES)

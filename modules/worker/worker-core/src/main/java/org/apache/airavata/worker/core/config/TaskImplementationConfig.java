@@ -10,14 +10,14 @@ import java.util.Map;
  */
 public class TaskImplementationConfig {
 
-    private String taskType;
+    private TaskTypes taskType;
     private String implementationClass;
 
-    public String getTaskType() {
+    public TaskTypes getTaskType() {
         return taskType;
     }
 
-    public void setTaskType(String taskType) {
+    public void setTaskType(TaskTypes taskType) {
         this.taskType = taskType;
     }
 

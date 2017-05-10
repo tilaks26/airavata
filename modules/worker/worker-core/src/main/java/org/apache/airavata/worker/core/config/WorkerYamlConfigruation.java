@@ -22,6 +22,7 @@ package org.apache.airavata.worker.core.config;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.worker.core.exceptions.WorkerException;
 import org.yaml.snakeyaml.Yaml;
 
@@ -141,7 +142,7 @@ public class WorkerYamlConfigruation {
 				for (Map<String, Object> taskImplementations : taskImplementationYaml) {
 					taskImplementationConfig = new TaskImplementationConfig();
 					identifier = ((String) taskImplementations.get(TASK));
-					taskImplementationConfig.setTaskType(identifier);
+					taskImplementationConfig.setTaskType(TaskTypes.valueOf(identifier));
 					taskImplementationConfig.setImplementationClass(((String) taskImplementations.get(TASK_CLASS)));
 					this.taskImplementations.add(taskImplementationConfig);
 				}

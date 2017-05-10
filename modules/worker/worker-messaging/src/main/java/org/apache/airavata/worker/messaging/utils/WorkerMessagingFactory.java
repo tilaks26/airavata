@@ -55,7 +55,7 @@ public class WorkerMessagingFactory {
         }
     }
 
-    public static Task getTaskImplementation(TaskTypes taskType) {
+    public static Task getTaskImplementation(TaskTypes  taskType) {
         return taskImplementations.get(taskType);
     }
 

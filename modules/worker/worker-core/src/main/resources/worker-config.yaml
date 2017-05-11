@@ -20,7 +20,7 @@
 
 jobSubmitters:
   - submissionProtocol: SSH
-    taskClass: org.apache.airavata.gfac.impl.task.DefaultJobSubmissionTask
+    taskClass: org.apache.airavata.worker.task.jobsubmission.impl.DefaultJobSubmissionTask
 #   properties:
 #     - userName: airavata
 #       passPhrase: airavata
@@ -29,13 +29,13 @@ jobSubmitters:
 #       hostName: remote.client.hostName
 
   - submissionProtocol: SSH_FORK
-    taskClass: org.apache.airavata.gfac.impl.task.ForkJobSubmissionTask
+    taskClass: org.apache.airavata.worker.task.jobsubmission.impl.ForkJobSubmissionTask
 
   - submissionProtocol: LOCAL
-    taskClass: org.apache.airavata.gfac.impl.task.LocalJobSubmissionTask
+    taskClass: org.apache.airavata.worker.task.jobsubmission.impl.LocalJobSubmissionTask
 
   - submissionProtocol: CLOUD
-    taskClass: org.apache.airavata.gfac.impl.task.AuroraJobSubmissionTask
+    taskClass: org.apache.airavata.worker.task.jobsubmission.impl.AuroraJobSubmissionTask
 
 # Following job subbmitters are not yet implemented.
 
@@ -81,7 +81,7 @@ fileTransferTasks:
 
 resources:
   - jobManagerType: PBS
-    commandOutputParser: org.apache.airavata.gfac.impl.job.PBSOutputParser
+    commandOutputParser: org.apache.airavata.worker.task.jobsubmission.parser.PBSOutputParser
     emailParser: org.apache.airavata.gfac.monitor.email.parser.PBSEmailParser
     resourceEmailAddresses:
       - pbsconsult@sdsc.edu  # gordon
@@ -91,7 +91,7 @@ resources:
       - gordon-fe2.local # Gordon
 
   - jobManagerType: SLURM
-    commandOutputParser: org.apache.airavata.gfac.impl.job.SlurmOutputParser
+    commandOutputParser: org.apache.airavata.worker.task.jobsubmission.parser.SlurmOutputParser
     emailParser: org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser
     resourceEmailAddresses:
       - slurm@comet # comet
@@ -100,22 +100,22 @@ resources:
       - slurm@jurecab01.zam.kfa-juelich.de # Jureca
 
   - jobManagerType: UGE
-    commandOutputParser: org.apache.airavata.gfac.impl.job.UGEOutputParser
+    commandOutputParser: org.apache.airavata.worker.task.jobsubmission.parser.UGEOutputParser
     emailParser: org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser
     resourceEmailAddresses:
       - ls4.tacc.utexas.edu # contain Lonestar
 
   - jobManagerType: LSF
-    commandOutputParser: org.apache.airavata.gfac.impl.job.LSFOutputParser
+    commandOutputParser: org.apache.airavata.worker.task.jobsubmission.parser.LSFOutputParser
     emailParser: org.apache.airavata.gfac.monitor.email.parser.LSFEmailParser
     resourceEmailAddresses:
       - iu.xsede.edu # test resource mail address
 
   - jobManagerType: FORK
-    commandOutputParser: org.apache.airavata.gfac.impl.job.ForkOutputParser
+    commandOutputParser: org.apache.airavata.worker.task.jobsubmission.parser.ForkOutputParser
 
   - jobManagerType: AIRAVATA_CUSTOM
-    commandOutputParser: org.apache.airavata.gfac.impl.job.AiravataCustomCommandOutputParser
+    commandOutputParser: org.apache.airavata.worker.task.jobsubmission.parser.AiravataCustomCommandOutputParser
     emailParser: org.apache.airavata.gfac.monitor.email.parser.AiravataCustomMailParser
     resourceEmailAddresses:
       - gw56jobs@scigap.org

@@ -19,9 +19,11 @@
 
     <modules>
         <module>worker-core</module>
+        <module>task-datastaging</module>
         <module>task-envsetup</module>
         <module>task-jobsubmission</module>
         <module>worker-messaging</module>
+        <module>task-monitoring</module>
     </modules>
 
     <profiles>

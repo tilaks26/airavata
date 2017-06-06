@@ -19,6 +19,7 @@
     <properties>
         <jcraft.version>0.1.53</jcraft.version>
         <net.schmizz.version>0.6.1</net.schmizz.version>
+        <testng.version>6.9.10</testng.version>
     </properties>
 
     <dependencies>
@@ -51,6 +52,11 @@
             <groupId>ch.ethz.ganymed</groupId>
             <artifactId>ganymed-ssh2</artifactId>
             <version>262</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
         </dependency>
     </dependencies>
 </project>

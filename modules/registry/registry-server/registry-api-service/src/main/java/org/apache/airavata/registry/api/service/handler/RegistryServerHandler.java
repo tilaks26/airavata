@@ -65,14 +65,9 @@ import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConver
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
-import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.*;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourceProfileRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -91,6 +86,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
     private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();
     private UserResourceProfileRepository userResourceProfileRepository = new UserResourceProfileRepository();
+    StorageResourceRepository storageResourceRepository = new StorageResourceRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -1616,8 +1612,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public StorageResourceDescription getStorageResource(String storageResourceId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(storageResourceId);
+            StorageResourceDescription storageResource = storageResourceRepository.getStorageResource(storageResourceId);
             logger.debug("Airavata retrieved storage resource with storage resource Id : " + storageResourceId);
             return storageResource;
         } catch (AppCatalogException e) {
@@ -1637,8 +1632,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Map<String, String> getAllStorageResourceNames() throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            Map<String, String> resourceIdList = appCatalog.getStorageResource().getAllStorageResourceIdList();
+            Map<String, String> resourceIdList = storageResourceRepository.getAllStorageResourceIdList();
             logger.debug("Airavata retrieved storage resources list...");
             return resourceIdList;
         } catch (AppCatalogException e) {
@@ -1659,8 +1653,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteStorageResource(String storageResourceId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getStorageResource().removeStorageResource(storageResourceId);
+            storageResourceRepository.removeStorageResource(storageResourceId);
             logger.debug("Airavata deleted storage resource with storage resource Id : " + storageResourceId);
             return true;
         } catch (AppCatalogException e) {
@@ -2918,7 +2911,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                     logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
                     return true;
                 case STORAGE_RESOURCE:
-                    appCatalog.getStorageResource().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
+                    storageResourceRepository.removeDataMovementInterface(resourceId, dataMovementInterfaceId);
                     logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
                     return true;
                 default:
@@ -3391,8 +3384,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateStorageResource(String storageResourceId, StorageResourceDescription storageResourceDescription) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getStorageResource().updateStorageResource(storageResourceId, storageResourceDescription);
+            storageResourceRepository.updateStorageResource(storageResourceId, storageResourceDescription);
             logger.debug("Airavata updated storage resource with storage resource Id : " + storageResourceId);
             return true;
         } catch (AppCatalogException e) {
@@ -3413,8 +3405,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerStorageResource(StorageResourceDescription storageResourceDescription) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            String storageResource = appCatalog.getStorageResource().addStorageResource(storageResourceDescription);
+            String storageResource = storageResourceRepository.addStorageResource(storageResourceDescription);
             logger.debug("Airavata registered storage resource with storage resource Id : " + storageResource);
             return storageResource;
         } catch (AppCatalogException e) {
@@ -4294,7 +4285,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
         dataMovementInterface.setDataMovementInterfaceId(dataMovementInterfaceId);
         dataMovementInterface.setPriorityOrder(priorityOrder);
         dataMovementInterface.setDataMovementProtocol(protocolType);
-        return computeResource.addDataMovementProtocol(computeResourceId, dmType, dataMovementInterface);
+        if (dmType.equals(DMType.COMPUTE_RESOURCE)) {
+            return computeResource.addDataMovementProtocol(computeResourceId, dmType, dataMovementInterface);
+        }
+        else if (dmType.equals(DMType.STORAGE_RESOURCE)) {
+            dataMovementInterface.setStorageResourceId(computeResourceId);
+            return storageResourceRepository.addDataMovementInterface(dataMovementInterface);
+        }
+        return null;
     }
 
     private WorkflowCatalog getWorkflowCatalog() {
